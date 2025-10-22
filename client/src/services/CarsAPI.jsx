@@ -1,6 +1,20 @@
 const API_URL = '/api/cars';
+const OPTIONS_URL = '/api/options';
 
-const getAllCars = async () => {
+export const getOptions = async () => {
+    try {
+        const response = await fetch(OPTIONS_URL);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching options:", error);
+        return {};
+    }
+};
+
+export const getAllCars = async () => {
     try {
         const response = await fetch(API_URL);
         if (!response.ok) {
@@ -13,7 +27,7 @@ const getAllCars = async () => {
     }
 };
 
-const getCarById = async (id) => {
+export const getCarById = async (id) => {
     try {
         const response = await fetch(`${API_URL}/${id}`);
         if (!response.ok) {
@@ -26,7 +40,7 @@ const getCarById = async (id) => {
     }
 };
 
-const createCar = async (carData) => {
+export const createCar = async (carData) => {
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -36,16 +50,17 @@ const createCar = async (carData) => {
             body: JSON.stringify(carData),
         });
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
         return await response.json();
     } catch (error) {
         console.error("Error creating car:", error);
-        return null;
+        throw error;
     }
 };
 
-const updateCar = async (id, carData) => {
+export const updateCar = async (id, carData) => {
     try {
         const response = await fetch(`${API_URL}/${id}`, {
             method: 'PUT',
@@ -55,16 +70,17 @@ const updateCar = async (id, carData) => {
             body: JSON.stringify(carData),
         });
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
         return await response.json();
     } catch (error) {
         console.error(`Error updating car with id ${id}:`, error);
-        return null;
+        throw error;
     }
 };
 
-const deleteCar = async (id) => {
+export const deleteCar = async (id) => {
     try {
         const response = await fetch(`${API_URL}/${id}`, {
             method: 'DELETE',
@@ -77,13 +93,4 @@ const deleteCar = async (id) => {
         console.error(`Error deleting car with id ${id}:`, error);
         return null;
     }
-};
-
-
-export {
-    getAllCars,
-    getCarById,
-    createCar,
-    updateCar,
-    deleteCar
 };
