@@ -4,6 +4,8 @@ import favicon from 'serve-favicon'
 import dotenv from 'dotenv'
 import cors from 'cors';
 import carRoutes from './routes/cars.js'
+import optionsRoutes from './routes/options.js'; // Import options routes
+import { seedDatabase } from './config/reset.js'; // Import seeder
 
 dotenv.config()
 
@@ -21,7 +23,14 @@ else if (process.env.NODE_ENV === 'production') {
     app.use(express.static('public'))
 }
 
+// Add a route to run the seeder
+app.get('/api/seed', async (req, res) => {
+    await seedDatabase();
+    res.send('Database seeded!');
+});
+
 app.use('/api/cars', carRoutes);
+app.use('/api/options', optionsRoutes); // Use options routes
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
